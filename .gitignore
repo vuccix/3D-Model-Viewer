@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# CLion garbage
+cmake‑build‑debug
+.idea
