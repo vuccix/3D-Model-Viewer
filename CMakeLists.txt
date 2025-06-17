@@ -4,6 +4,8 @@ project(Playing_with_OpenGL LANGUAGES C CXX)
 set(CMAKE_C_STANDARD   11)
 set(CMAKE_CXX_STANDARD 20)
 
+add_compile_options(-Wall -pedantic -O2)
+
 # ---------- GLFW ---------- #
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
@@ -18,6 +20,7 @@ target_include_directories(glad PUBLIC external/glad/include)
 
 # ---------- exe ---------- #
 add_executable(Playing_with_OpenGL src/main.cpp
+    src/implementation/game.cpp
     external/stb/stb_implementation.cpp)
 
 include_directories(external/glm)
