@@ -17,8 +17,11 @@ std::string Shader::loadShaderSource(const char* filepath) {
 }
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
-    const char* vertSrc = loadShaderSource(vertexPath).c_str();
-    const char* fragSrc = loadShaderSource(fragmentPath).c_str();
+    const auto vertex   = loadShaderSource(vertexPath);
+    const auto fragment = loadShaderSource(fragmentPath);
+    
+    const char* vertSrc = vertex.c_str();
+    const char* fragSrc = fragment.c_str();
 
     const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertSrc, nullptr);
