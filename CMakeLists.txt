@@ -19,9 +19,8 @@ add_library(glad STATIC external/glad/src/gl.c)
 target_include_directories(glad PUBLIC external/glad/include)
 
 # ---------- exe ---------- #
-add_executable(Playing_with_OpenGL src/main.cpp
-    src/implementation/game.cpp
-    external/stb/stb_implementation.cpp)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+add_executable(Playing_with_OpenGL ${SOURCES})
 
 include_directories(external/glm)
 include_directories(external/stb)

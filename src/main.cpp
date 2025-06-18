@@ -1,25 +1,17 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "implementation/game.h"
+#include <cmath>
+#include "implementation/Game.h"
+#include "shaders/Shader.h"
+#include "implementation/VBO.h"
+#include "implementation/VAO.h"
+#include "implementation/EBO.h"
 
 // error callback
 void glfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW Error [" << error << "]: " << description << '\n';
 }
-
-const char* vertexShaderSource =
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main() {\n"
-"   gl_Position = vec4(aPos.xyz, 1.);\n"
-"}\0";
-const char* fragmentShaderSource =
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main() {\n"
-"   FragColor = vec4(.8, .3, .02, 1.);\n"
-"}\0";
 
 int main() {
     // init GLFW
@@ -53,47 +45,34 @@ int main() {
     // set viewport
     glViewport(0, 0, 1024, 576);
 
+    const Shader shader("../src/shaders/default.vert", "../src/shaders/default.frag");
+
     // --------------------------------------------------------------------------------------------
-
-    const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-
-    const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
-
-    const GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-
-    glLinkProgram(program);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    glUseProgram(program);
-
     constexpr GLfloat vertices[] = {
-        -.5f, -.5f, 0.f,
-        .5f, -.5f, 0.f,
-        0.f, .5f, 0.f,
+        -.5f,       -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
+         .5f,       -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
+        0.f,         .5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
+        -.5f / 2.f,  .5f * static_cast<float>(sqrt(3)) / 6.f, 0.f,
+         .5f / 2.f,  .5f * static_cast<float>(sqrt(3)) / 6.f, 0.f,
+        0.f,        -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
+    };
+    constexpr GLuint indices[] = {
+        0, 3, 5,
+        3, 2, 4,
+        5, 4, 1,
     };
 
-    GLuint vao, vbo;
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
+    VAO vao;
+    vao.bind();
 
-    glBindVertexArray(vao);
+    VBO vbo(vertices, sizeof(vertices));
+    const EBO ebo(indices, sizeof(indices));
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    vao.linkVBO(vbo, 0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), static_cast<void*>(nullptr));
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    vao.unbind();
+    vbo.unbind();
+    ebo.unbind();
     // --------------------------------------------------------------------------------------------
 
     // main loop
@@ -101,21 +80,15 @@ int main() {
         glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(program);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // ----------------------------------------------------------------------------------------
+        shader.use();
+        vao.bind();
+        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr);
+        // ----------------------------------------------------------------------------------------
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    // --------------------------------------------------------------------------------------------
-
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteProgram(program);
-
-    // --------------------------------------------------------------------------------------------
 
     // clean up
     glfwDestroyWindow(window);
