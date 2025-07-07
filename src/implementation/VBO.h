@@ -4,8 +4,10 @@
 
 class VBO {
 public:
-    VBO(const GLfloat* vertices, GLsizeiptr size);
+    VBO() = default;
    ~VBO();
+
+    void init(const GLfloat* vertices, GLsizeiptr size);
 
     void bind() const;
     void unbind() const;

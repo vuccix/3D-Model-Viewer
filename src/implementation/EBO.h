@@ -4,8 +4,10 @@
 
 class EBO {
 public:
-    EBO(const GLuint* indices, GLsizei size);
+    EBO() = default;
    ~EBO();
+
+    void init(const GLuint* indices, GLsizei size);
 
     void bind() const;
     void unbind() const;

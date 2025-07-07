@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include <fstream>
 #include <iostream>
+// #include <filesystem>
 
 std::string Shader::loadShaderSource(const char* filepath) {
     if (std::ifstream in(filepath, std::ios::binary); in) {
@@ -17,9 +18,11 @@ std::string Shader::loadShaderSource(const char* filepath) {
 }
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+    // std::cout << std::filesystem::current_path() << std::endl; // for debugging
+
     const auto vertex   = loadShaderSource(vertexPath);
     const auto fragment = loadShaderSource(fragmentPath);
-    
+
     const char* vertSrc = vertex.c_str();
     const char* fragSrc = fragment.c_str();
 

@@ -45,46 +45,14 @@ int main() {
     // set viewport
     glViewport(0, 0, 1024, 576);
 
-    const Shader shader("../src/shaders/default.vert", "../src/shaders/default.frag");
-
-    // --------------------------------------------------------------------------------------------
-    constexpr GLfloat vertices[] = {
-        -.5f,       -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
-         .5f,       -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
-        0.f,         .5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
-        -.5f / 2.f,  .5f * static_cast<float>(sqrt(3)) / 6.f, 0.f,
-         .5f / 2.f,  .5f * static_cast<float>(sqrt(3)) / 6.f, 0.f,
-        0.f,        -.5f * static_cast<float>(sqrt(3)) / 3.f, 0.f,
-    };
-    constexpr GLuint indices[] = {
-        0, 3, 5,
-        3, 2, 4,
-        5, 4, 1,
-    };
-
-    VAO vao;
-    vao.bind();
-
-    VBO vbo(vertices, sizeof(vertices));
-    const EBO ebo(indices, sizeof(indices));
-
-    vao.linkVBO(vbo, 0);
-
-    vao.unbind();
-    vbo.unbind();
-    ebo.unbind();
-    // --------------------------------------------------------------------------------------------
+    Game game;
 
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // ----------------------------------------------------------------------------------------
-        shader.use();
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr);
-        // ----------------------------------------------------------------------------------------
+        game.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
