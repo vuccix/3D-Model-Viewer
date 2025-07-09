@@ -17,4 +17,5 @@ private:
     GLuint id;
 
     static std::string loadShaderSource(const char* filepath);
+    static void compileErrors(unsigned shader, const char* type);
 };

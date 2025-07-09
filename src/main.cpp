@@ -1,12 +1,11 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <cmath>
 #include "implementation/Game.h"
 #include "shaders/Shader.h"
-#include "implementation/VBO.h"
-#include "implementation/VAO.h"
-#include "implementation/EBO.h"
+
+#define WIDTH  576 //1024
+#define HEIGHT 576
 
 // error callback
 void glfwErrorCallback(const int error, const char* description) {
@@ -27,7 +26,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    GLFWwindow* window = glfwCreateWindow(1024, 576, "OpenGL Test", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL Test", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -43,9 +42,9 @@ int main() {
     }
 
     // set viewport
-    glViewport(0, 0, 1024, 576);
+    glViewport(0, 0, WIDTH, HEIGHT);
 
-    Game game;
+    const Game game;
 
     // main loop
     while (!glfwWindowShouldClose(window)) {

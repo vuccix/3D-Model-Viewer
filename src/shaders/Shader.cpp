@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include <cstring>
 #include <fstream>
 #include <iostream>
 // #include <filesystem>
@@ -17,6 +18,27 @@ std::string Shader::loadShaderSource(const char* filepath) {
     throw std::runtime_error("Failed to load shader file");
 }
 
+void Shader::compileErrors(const unsigned shader, const char* type) {
+    GLint hasCompiled;
+    char infoLog[1024];
+
+    if (std::strcmp(type, "PROGRAM") != 0) {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+
+        if (hasCompiled == GL_FALSE) {
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+            std::cout << "SHADER_COMPILATION_ERROR: " << type << "\n" << infoLog << std::endl;
+        }
+        else {
+            glGetProgramiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+            if (hasCompiled == GL_FALSE) {
+                glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+                std::cout << "SHADER_COMPILATION_ERROR: " << type << "\n" << infoLog << std::endl;
+            }
+        }
+    }
+}
+
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     // std::cout << std::filesystem::current_path() << std::endl; // for debugging
 
@@ -29,16 +51,19 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertSrc, nullptr);
     glCompileShader(vertexShader);
+    compileErrors(vertexShader, "VERTEX");
 
     const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragSrc, nullptr);
     glCompileShader(fragmentShader);
+    compileErrors(fragmentShader, "FRAGMENT");
 
     id = glCreateProgram();
     glAttachShader(id, vertexShader);
     glAttachShader(id, fragmentShader);
 
     glLinkProgram(id);
+    compileErrors(id, "PROGRAM");
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

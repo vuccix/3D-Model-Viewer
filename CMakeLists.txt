@@ -18,12 +18,15 @@ add_subdirectory(external/glfw-3.4)
 add_library(glad STATIC external/glad/src/gl.c)
 target_include_directories(glad PUBLIC external/glad/include)
 
-# ---------- exe ---------- #
+# ---------- executable ---------- #
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-add_executable(Playing_with_OpenGL ${SOURCES})
+add_executable(Playing_with_OpenGL ${SOURCES}
+        external/stb/stb_implementation.cpp)
 
+# ---------- GLM & STB ---------- #
 include_directories(external/glm)
-include_directories(external/stb)
+target_include_directories(Playing_with_OpenGL PRIVATE external)
+
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(Playing_with_OpenGL PRIVATE
