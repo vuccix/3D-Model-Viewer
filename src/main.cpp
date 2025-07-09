@@ -26,7 +26,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL Test", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "3D Model Viewer", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -44,13 +44,16 @@ int main() {
     // set viewport
     glViewport(0, 0, WIDTH, HEIGHT);
 
-    const Game game;
+    glEnable(GL_DEPTH_TEST);
+
+    Game game;
 
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        game.inputs();
         game.render();
 
         glfwSwapBuffers(window);

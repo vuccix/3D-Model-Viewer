@@ -1,4 +1,4 @@
-# Playing with OpenGL
+# 3D Model Viewer
 
 todo
 
