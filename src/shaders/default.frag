@@ -20,11 +20,14 @@ void main() {
    float ambient = 0.2;
    float diffuse = max(dot(normal, lightDir), 0.);
 
-   float specularLight = 0.5;
-   vec3  viewDir       = normalize(camPos - curPos);
-   vec3  reflectionDir = reflect(-lightDir, normal);
-   float specAmount    = pow(max(dot(viewDir, reflectionDir), 0.), 8);
-   float specular      = specAmount * specularLight;
+   float specular = 0.;
+   if (diffuse != 0.) {
+      float specularLight = 0.5;
+      vec3  viewDir       = normalize(camPos - curPos);
+      vec3  halfwayVec    = normalize(viewDir + lightDir);
+      float specAmount    = pow(max(dot(normal, halfwayVec), 0.), 16);
+      specular            = specAmount * specularLight;
+   }
 
    FragColor = texture(albedo, texCoord) * lightColor * (diffuse + ambient + specular);
 }

@@ -9,7 +9,7 @@
 
 class Camera {
 public:
-    Camera(int width, int height, const glm::vec3& position);
+    Camera(const glm::vec3& position);
 
     void updateMatrix(float FOVdeg, float near, float far);
     void sendMatrix(const Shader& shader, const char* uniform) const;
@@ -24,7 +24,7 @@ private:
     glm::vec3 m_up     = { 0.f, 1.f,  0.f };
     glm::mat4 m_matrix = { 1.f };
 
-    int   width, height;
+    int   m_width{}, m_height{};
     float m_angleH, m_angleV;
     float m_sensitivity = 30.f;
     float m_speed       = 0.0001f;

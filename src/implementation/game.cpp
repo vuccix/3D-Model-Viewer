@@ -9,13 +9,11 @@
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
 #define IMAGE_PATH  "../src/resources/Bricks_D.jpg"
-#define WIDTH  768 // 576 //1024
-#define HEIGHT 768 // 576
 
 Game::Game()
         : shader(VERTEX_PATH, FRAG_PATH),
           texture(IMAGE_PATH, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE),
-          camera(WIDTH, HEIGHT, glm::vec3(0.f, 0.5f, 2.f)) {
+          camera(glm::vec3(0.f, 0.5f, 2.f)) {
     vao.bind();
 
     vbo.init(vertices, sizeof(vertices));
