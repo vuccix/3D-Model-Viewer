@@ -4,10 +4,9 @@
 #include "implementation/Game.h"
 #include "shaders/Shader.h"
 
-#define WIDTH  576 //1024
-#define HEIGHT 576
+#define WIDTH  768 // 576 // 1024
+#define HEIGHT 768 // 576
 
-// error callback
 void glfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW Error [" << error << "]: " << description << '\n';
 }
@@ -17,7 +16,7 @@ int main() {
     glfwSetErrorCallback(glfwErrorCallback);
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // OpenGL 3.3 Core context
@@ -30,7 +29,7 @@ int main() {
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
-        return 1;
+        return EXIT_FAILURE;
     }
 
     glfwMakeContextCurrent(window);
@@ -38,17 +37,15 @@ int main() {
     // load OpenGL function pointers via GLAD
     if (!gladLoadGL(glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD\n";
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    // set viewport
     glViewport(0, 0, WIDTH, HEIGHT);
-
     glEnable(GL_DEPTH_TEST);
 
     Game game;
 
-    // main loop
+    // main game loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -63,5 +60,5 @@ int main() {
     // clean up
     glfwDestroyWindow(window);
     glfwTerminate();
-    return 0;
+    return EXIT_SUCCESS;
 }

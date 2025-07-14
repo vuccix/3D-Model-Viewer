@@ -10,6 +10,7 @@ public:
 
     void use() const;
     void deleteShader() const;
+    void reloadShader(const char* vertexPath, const char* fragmentPath);
 
     GLuint getID() const { return id; }
 
@@ -18,4 +19,5 @@ private:
 
     static std::string loadShaderSource(const char* filepath);
     static void compileErrors(unsigned shader, const char* type);
+    static GLuint compileShader(const char* vertexPath, const char* fragmentPath);
 };

@@ -39,7 +39,7 @@ void Shader::compileErrors(const unsigned shader, const char* type) {
     }
 }
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath) {
+GLuint Shader::compileShader(const char* vertexPath, const char* fragmentPath) {
     // std::cout << std::filesystem::current_path() << std::endl; // for debugging
 
     const auto vertex   = loadShaderSource(vertexPath);
@@ -58,15 +58,21 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
     glCompileShader(fragmentShader);
     compileErrors(fragmentShader, "FRAGMENT");
 
-    id = glCreateProgram();
-    glAttachShader(id, vertexShader);
-    glAttachShader(id, fragmentShader);
+    const GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
 
-    glLinkProgram(id);
-    compileErrors(id, "PROGRAM");
+    glLinkProgram(program);
+    compileErrors(program, "PROGRAM");
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    return program;
+}
+
+Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+    id = compileShader(vertexPath, fragmentPath);
 }
 
 Shader::~Shader() { glDeleteProgram(id); }
@@ -74,3 +80,9 @@ Shader::~Shader() { glDeleteProgram(id); }
 void Shader::use() const { glUseProgram(id); }
 
 void Shader::deleteShader() const { glDeleteProgram(id); }
+
+void Shader::reloadShader(const char* vertexPath, const char* fragmentPath) {
+    const GLuint newID = compileShader(vertexPath, fragmentPath);
+    deleteShader();
+    id = newID;
+}

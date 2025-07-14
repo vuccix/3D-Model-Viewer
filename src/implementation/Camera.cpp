@@ -1,61 +1,64 @@
 #include "Camera.h"
 
-Camera::Camera(int width, int height, const glm::vec3& position)
-        : position(position), width(width), height(height) {
-    init();
-}
-
-void Camera::init() {
-    glm::vec3 hTarget(orientation.x, 0.0f, orientation.z);
+Camera::Camera(const int width, const int height, const glm::vec3& position)
+        : m_position(position), width(width), height(height) {
+    glm::vec3 hTarget(m_target.x, 0.0f, m_target.z);
     hTarget = glm::normalize(hTarget);
 
     const float angle = glm::degrees(glm::asin(abs(hTarget.z)));
 
     if (hTarget.z >= 0.0f) {
         if (hTarget.x >= 0.0f)
-            angleH = 360.f - angle;
+            m_angleH = 360.f - angle;
         else
-            angleH = 180.f + angle;
+            m_angleH = 180.f + angle;
     }
     else {
         if (hTarget.x >= 0.0f)
-            angleH = angle;
+            m_angleH = angle;
         else
-            angleH = 180.f - angle;
+            m_angleH = 180.f - angle;
     }
 
-    angleV = -glm::degrees(glm::asin(orientation.y));
+    m_angleV = -glm::degrees(glm::asin(m_target.y));
 }
 
-void Camera::matrix(float FOVdeg, float near, float far, const Shader& shader, const char* uniform) const {
+void Camera::updateMatrix(const float FOVdeg, const float near, const float far) {
     const float aspect = static_cast<float>(width) / static_cast<float>(height);
 
-    const glm::mat4 view       = glm::lookAt(position, position + orientation, up);
+    const glm::mat4 view       = glm::lookAt(m_position, m_position + m_target, m_up);
     const glm::mat4 projection = glm::perspective(glm::radians(FOVdeg), aspect, near, far);
 
+    m_matrix = projection * view;
+}
+
+void Camera::sendMatrix(const Shader& shader, const char* uniform) const {
     const GLint loc = glGetUniformLocation(shader.getID(), uniform);
-    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(projection * view));
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m_matrix));
+
+    const GLint posLoc = glGetUniformLocation(shader.getID(), "camPos");
+    glUniform3fv(posLoc, 1, glm::value_ptr(m_position));
 }
 
 void Camera::inputs(GLFWwindow* window) {
     // WASD movement
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        position += speed * orientation;
+        m_position += m_speed * m_target;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        position -= speed * orientation;
+        m_position -= m_speed * m_target;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        position -= speed * glm::normalize(glm::cross(orientation, up));
+        m_position -= m_speed * glm::normalize(glm::cross(m_target, m_up));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        position += speed * glm::normalize(glm::cross(orientation, up));
+        m_position += m_speed * glm::normalize(glm::cross(m_target, m_up));
 
     // Up and Down movement
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        position += speed * up;
+        m_position += m_speed * m_up;
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        position -= speed * up;
+        m_position -= m_speed * m_up;
 
     // camera rotation
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
         if (firstClick) {
@@ -72,18 +75,16 @@ void Camera::inputs(GLFWwindow* window) {
         const double DeltaX = mouseX - centerX;
         const double DeltaY = mouseY - centerY;
 
-        angleH -= static_cast<float>(DeltaX) / sensitivity;
-        angleV += static_cast<float>(DeltaY) / sensitivity;
+        m_angleH -= static_cast<float>(DeltaX) / m_sensitivity;
+        m_angleV += static_cast<float>(DeltaY) / m_sensitivity;
 
-        if (angleV > 89.0f)
-            angleV = 89.0f;
-        if (angleV < -89.0f)
-            angleV = -89.0f;
+        if (m_angleV >  89.f) m_angleV =  89.f;
+        if (m_angleV < -89.f) m_angleV = -89.f;
 
         update();
         glfwSetCursorPos(window, width / 2., height / 2.);
     }
-    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         firstClick = true;
     }
@@ -92,13 +93,13 @@ void Camera::inputs(GLFWwindow* window) {
 void Camera::update() {
     constexpr glm::vec3 yAxis(0.f, 1.f, 0.f);
 
-    const glm::quat quaternion = glm::angleAxis(glm::radians(angleH), yAxis);
+    const glm::quat quaternion = glm::angleAxis(glm::radians(m_angleH), yAxis);
     glm::vec3 view = glm::normalize(quaternion * glm::vec3(1.f, 0.f, 0.f));
 
     const glm::vec3 U = glm::normalize(cross(yAxis, view));
-    const glm::quat quaternion1 = glm::angleAxis(glm::radians(angleV), U);
+    const glm::quat quaternion1 = glm::angleAxis(glm::radians(m_angleV), U);
     view = quaternion1 * view;
 
-    orientation = glm::normalize(view);
-    up = glm::normalize(cross(orientation, U));
+    m_target = glm::normalize(view);
+    m_up = glm::normalize(cross(m_target, U));
 }
