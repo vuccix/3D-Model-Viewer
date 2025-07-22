@@ -11,6 +11,23 @@ void glfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW Error [" << error << "]: " << description << '\n';
 }
 
+const char* glErrorToString(const GLenum err) {
+    switch (err) {
+        case GL_INVALID_ENUM:
+            return "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument.";
+        case GL_INVALID_VALUE:
+            return "GL_INVALID_VALUE: A numeric argument is out of range.";
+        case GL_INVALID_OPERATION:
+            return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state.";
+        case GL_OUT_OF_MEMORY:
+            return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            return "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete.";
+        default:
+            return "Unknown OpenGL error.";
+    }
+}
+
 int main() {
     // init GLFW
     glfwSetErrorCallback(glfwErrorCallback);
@@ -52,6 +69,11 @@ int main() {
 
         game.inputs();
         game.render();
+
+        // check for OpenGL errors
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR)
+            std::cerr << glErrorToString(err) << '\n';
 
         glfwSwapBuffers(window);
         glfwPollEvents();
