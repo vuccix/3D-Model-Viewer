@@ -18,23 +18,24 @@ std::string Shader::loadShaderSource(const char* filepath) {
     throw std::runtime_error("Failed to load shader file");
 }
 
-void Shader::compileErrors(const unsigned shader, const char* type) {
-    GLint hasCompiled;
+void Shader::compileErrors(const GLuint shader, const char* type) {
+    GLint status;
     char infoLog[1024];
 
-    if (std::strcmp(type, "PROGRAM") != 0) {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
-
-        if (hasCompiled == GL_FALSE) {
-            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            std::cout << "SHADER_COMPILATION_ERROR: " << type << "\n" << infoLog << std::endl;
+    if (std::strcmp(type, "PROGRAM") == 0) {
+        // check program link status
+        glGetProgramiv(shader, GL_LINK_STATUS, &status);
+        if (status == GL_FALSE) {
+            glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+            std::cerr << "PROGRAM_LINK_ERROR:\n" << infoLog << "\n";
         }
-        else {
-            glGetProgramiv(shader, GL_COMPILE_STATUS, &hasCompiled);
-            if (hasCompiled == GL_FALSE) {
-                glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-                std::cout << "SHADER_COMPILATION_ERROR: " << type << "\n" << infoLog << std::endl;
-            }
+    }
+    else {
+        // check shader compile status
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+        if (status == GL_FALSE) {
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+            std::cerr << type << "_COMPILE_ERROR:\n" << infoLog << "\n";
         }
     }
 }

@@ -18,6 +18,6 @@ private:
     GLuint id;
 
     static std::string loadShaderSource(const char* filepath);
-    static void compileErrors(unsigned shader, const char* type);
+    static void compileErrors(GLuint shader, const char* type);
     static GLuint compileShader(const char* vertexPath, const char* fragmentPath);
 };
