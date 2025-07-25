@@ -5,7 +5,7 @@
 
 class Texture {
 public:
-    Texture(const char* path, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
+    Texture(const char* path, GLuint slot);
    ~Texture();
 
     static void texUnit(const Shader& shader, const char* uniformName, GLint unit);
@@ -15,6 +15,6 @@ public:
     GLuint getID() const { return id; }
 
 private:
-    GLenum type{};
     GLuint id{};
+    GLuint unit{};
 };

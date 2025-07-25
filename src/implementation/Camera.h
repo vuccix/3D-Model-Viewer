@@ -27,7 +27,7 @@ private:
     int   m_width{}, m_height{};
     float m_angleH, m_angleV;
     float m_sensitivity = 30.f;
-    float m_speed       = 0.0001f;
+    float m_speed       = 0.00025f;
 
     bool firstClick = true;
 

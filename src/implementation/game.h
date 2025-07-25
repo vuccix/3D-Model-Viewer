@@ -22,39 +22,18 @@ private:
     EBO ebo;
 
     Shader  shader;
-    Texture texture;
+    Texture texture, specular;
     Camera  camera;
 
-    GLfloat vertices[16 * 11] = {
-        // Coords               // Colors                 // TexCoords     // Normals
-       -0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 0.0f, /**/ 0.0f, -1.0f, 0.0f, // Bottom side
-	   -0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 5.0f, /**/ 0.0f, -1.0f, 0.0f, // Bottom side
-	    0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 5.0f, /**/ 0.0f, -1.0f, 0.0f, // Bottom side
-	    0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 0.0f, /**/ 0.0f, -1.0f, 0.0f, // Bottom side
-
-	   -0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 0.0f, /**/ -0.8f, 0.5f, 0.0f, // Left Side
-	   -0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 0.0f, /**/ -0.8f, 0.5f, 0.0f, // Left Side
-	    0.0f, 0.8f,  0.0f, /**/ 0.92f, 0.86f, 0.76f, /**/ 2.5f, 5.0f, /**/ -0.8f, 0.5f, 0.0f, // Left Side
-
-	   -0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 0.0f, /**/ 0.0f, 0.5f, -0.8f, // Non-facing side
-	    0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 0.0f, /**/ 0.0f, 0.5f, -0.8f, // Non-facing side
-	    0.0f, 0.8f,  0.0f, /**/ 0.92f, 0.86f, 0.76f, /**/ 2.5f, 5.0f, /**/ 0.0f, 0.5f, -0.8f, // Non-facing side
-
-	    0.5f, 0.0f, -0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 0.0f, /**/ 0.8f, 0.5f, 0.0f, // Right side
-	    0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 0.0f, /**/ 0.8f, 0.5f, 0.0f, // Right side
-	    0.0f, 0.8f,  0.0f, /**/ 0.92f, 0.86f, 0.76f, /**/ 2.5f, 5.0f, /**/ 0.8f, 0.5f, 0.0f, // Right side
-
-	    0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 5.0f, 0.0f, /**/ 0.0f, 0.5f, 0.8f, // Facing side
-	   -0.5f, 0.0f,  0.5f, /**/ 0.83f, 0.70f, 0.44f, /**/ 0.0f, 0.0f, /**/ 0.0f, 0.5f, 0.8f, // Facing side
-	    0.0f, 0.8f,  0.0f, /**/ 0.92f, 0.86f, 0.76f, /**/ 2.5f, 5.0f, /**/ 0.0f, 0.5f, 0.8f  // Facing side
+    GLfloat vertices[4 * 11] = {
+    	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+		-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+    	1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+    	1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
     };
-    GLuint indices[6 * 3] = {
-    	 0,  1,  2, // bottom side
-		 0,  2,  3, // bottom side
-		 4,  6,  5, // left side
-		 7,  9,  8, // non-facing side
-		10, 12, 11, // right side
-		13, 15, 14  // facing side
+    GLuint indices[2 * 3] = {
+    	0, 1, 2,
+		0, 2, 3
     };
 
     glm::vec3 cameraPos    = glm::vec3(0.f, 0.5f, 2.f);

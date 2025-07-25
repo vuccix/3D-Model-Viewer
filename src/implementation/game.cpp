@@ -8,11 +8,13 @@
 
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
-#define IMAGE_PATH  "../src/resources/Bricks_D.jpg"
+
+#define ALBEDO_PATH   "../src/resources/Bricks_D.jpg"
+#define SPECULAR_PATH "../src/resources/Bricks_S.jpg"
 
 Game::Game()
         : shader(VERTEX_PATH, FRAG_PATH),
-          texture(IMAGE_PATH, GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE),
+          texture(ALBEDO_PATH, 0), specular(SPECULAR_PATH, 1),
           camera(glm::vec3(0.f, 0.5f, 2.f)) {
     vao.bind();
 
@@ -29,6 +31,7 @@ Game::Game()
     ebo.unbind();
 
     Texture::texUnit(shader, "albedo", 0);
+    Texture::texUnit(shader, "specular0", 1);
 
     const GLint modelLoc = glGetUniformLocation(shader.getID(), "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(pyramidModel));
@@ -45,6 +48,8 @@ void Game::render() {
     camera.sendMatrix(shader, "MVP");
 
     texture.bind();
+    specular.bind();
+
     vao.bind();
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, nullptr);
 }
