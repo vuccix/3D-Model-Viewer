@@ -8,6 +8,9 @@
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
 
+#define ALBEDO_PATH   "../src/resources/Bricks_D.jpg"
+#define SPECULAR_PATH "../src/resources/Bricks_S.jpg"
+
 Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2.f)) {
     m_shader.use();
 
@@ -21,6 +24,7 @@ Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2
     const GLint modelLoc = glGetUniformLocation(m_shader.getID(), "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f)));
 
+    constexpr glm::vec3 lightPos(0.5f, 0.5f, 0.5f);
     const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");
     glUniform3fv(lightLoc, 1, glm::value_ptr(lightPos));
 }

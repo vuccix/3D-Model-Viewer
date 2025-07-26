@@ -18,7 +18,7 @@ void Mesh::init(const std::vector<Vertex>& vertices, const std::vector<GLuint>& 
 
     m_vao.unbind();
     m_vbo.unbind();
-    // m_ebo.unbind();
+    m_ebo.unbind();
 }
 
 void Mesh::draw(const Shader& shader, const Camera& camera) const {

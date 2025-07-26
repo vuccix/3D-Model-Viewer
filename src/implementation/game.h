@@ -5,9 +5,6 @@
 #include "Mesh.h"
 #include "Camera.h"
 
-#define ALBEDO_PATH   "../src/resources/Bricks_D.jpg"
-#define SPECULAR_PATH "../src/resources/Bricks_S.jpg"
-
 class Game {
 public:
     Game();
@@ -31,7 +28,4 @@ private:
 		0, 2, 3
 	};
 	std::vector<Texture> m_textures;
-
-    // glm::vec3 cameraPos    = glm::vec3(0.f, 0.5f, 2.f);
-    glm::vec3 lightPos     = glm::vec3(0.5f, 0.5f, 0.5f);
 };

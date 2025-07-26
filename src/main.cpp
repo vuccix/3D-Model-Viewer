@@ -1,11 +1,11 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <format>
 #include "implementation/Game.h"
-#include "shaders/Shader.h"
 
-#define WIDTH  768 // 576 // 1024
-#define HEIGHT 768 // 576
+#define WIDTH  1024
+#define HEIGHT 768
 
 void glfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW Error [" << error << "]: " << description << '\n';
@@ -41,12 +41,35 @@ int main() {
     }
 
     glViewport(0, 0, WIDTH, HEIGHT);
+
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CCW);
 
     Game game;
 
+    float prevTime  = 0.f;
+    float currTime  = 0.f;
+    float deltaTime = 0.f;
+    unsigned counter = 0;
+
     // main game loop
     while (!glfwWindowShouldClose(window)) {
+        // FPS counter ----------------------------------------------------------------------------
+        currTime  = glfwGetTime();
+        deltaTime = currTime - prevTime;
+        counter++;
+        if (deltaTime >= 1. / 30.) {
+            auto FPS = std::format("{}", (1. / deltaTime) * counter);
+            auto newTitle = std::format("3D Model Viewer - {}FPS", FPS);
+            glfwSetWindowTitle(window, newTitle.c_str());
+            prevTime = currTime;
+            counter = 0;
+        }
+        // ----------------------------------------------------------------------------------------
+
         glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
