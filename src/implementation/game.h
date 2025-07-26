@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/gl.h>
-#include "../shaders/Shader.h"
+#include "Shader.h"
 #include "Mesh.h"
 #include "Camera.h"
 

@@ -72,9 +72,7 @@ GLuint Shader::compileShader(const char* vertexPath, const char* fragmentPath) {
     return program;
 }
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-    id = compileShader(vertexPath, fragmentPath);
-}
+Shader::Shader(const char* vertexPath, const char* fragmentPath) : id(compileShader(vertexPath, fragmentPath)) {}
 
 Shader::~Shader() { glDeleteProgram(id); }
 

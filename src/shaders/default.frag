@@ -9,6 +9,7 @@ in vec2 texCoord;
 
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
+uniform sampler2D normal0;
 
 uniform vec3 lightPos;
 uniform vec3 camPos;

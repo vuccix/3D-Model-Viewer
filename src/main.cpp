@@ -50,9 +50,9 @@ int main() {
 
     Game game;
 
-    float prevTime  = 0.f;
-    float currTime  = 0.f;
-    float deltaTime = 0.f;
+    double prevTime  = 0.;
+    double currTime  = 0.;
+    double deltaTime = 0.;
     unsigned counter = 0;
 
     // main game loop
@@ -60,13 +60,13 @@ int main() {
         // FPS counter ----------------------------------------------------------------------------
         currTime  = glfwGetTime();
         deltaTime = currTime - prevTime;
-        counter++;
+        ++counter;
         if (deltaTime >= 1. / 30.) {
-            auto FPS = std::format("{}", (1. / deltaTime) * counter);
-            auto newTitle = std::format("3D Model Viewer - {}FPS", FPS);
+            const std::string FPS      = std::format("{}", (1. / deltaTime) * counter);
+            const std::string newTitle = std::format("3D Model Viewer - {}FPS", FPS);
             glfwSetWindowTitle(window, newTitle.c_str());
             prevTime = currTime;
-            counter = 0;
+            counter  = 0;
         }
         // ----------------------------------------------------------------------------------------
 
