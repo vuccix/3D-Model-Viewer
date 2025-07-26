@@ -1,57 +1,37 @@
 #include "Game.h"
-
-#include <format>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <format>
 #include <iostream>
 
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
 
-#define ALBEDO_PATH   "../src/resources/Bricks_D.jpg"
-#define SPECULAR_PATH "../src/resources/Bricks_S.jpg"
+Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2.f)) {
+    m_shader.use();
 
-Game::Game()
-        : shader(VERTEX_PATH, FRAG_PATH),
-          texture(ALBEDO_PATH, 0), specular(SPECULAR_PATH, 1),
-          camera(glm::vec3(0.f, 0.5f, 2.f)) {
-    vao.bind();
+    // hack solution
+    m_textures.reserve(2);
+    m_textures.emplace_back(ALBEDO_PATH, "diffuse", 0);
+    m_textures.emplace_back(SPECULAR_PATH, "specular", 1);
 
-    vbo.init(vertices, sizeof(vertices));
-    ebo.init(indices, sizeof(indices));
+    m_mesh.init(m_vertices, m_indices, m_textures);
 
-    VAO::linkAttrib(vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), nullptr);
-    VAO::linkAttrib(vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    VAO::linkAttrib(vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-    VAO::linkAttrib(vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), reinterpret_cast<void*>(8 * sizeof(float)));
+    const GLint modelLoc = glGetUniformLocation(m_shader.getID(), "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f)));
 
-    vao.unbind();
-    vbo.unbind();
-    ebo.unbind();
-
-    Texture::texUnit(shader, "albedo", 0);
-    Texture::texUnit(shader, "specular0", 1);
-
-    const GLint modelLoc = glGetUniformLocation(shader.getID(), "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(pyramidModel));
-
-    const GLint lightLoc = glGetUniformLocation(shader.getID(), "lightPos");
-    if (lightLoc == -1) { exit(EXIT_FAILURE); }
+    const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");
     glUniform3fv(lightLoc, 1, glm::value_ptr(lightPos));
 }
 
 void Game::render() {
-    shader.use();
+    m_shader.use();
 
-    camera.updateMatrix(45.f, 0.1f, 100.f);
-    camera.sendMatrix(shader, "MVP");
+    m_camera.updateMatrix(45.f, 0.1f, 100.f);
+    m_camera.sendMatrix(m_shader, "MVP");
 
-    texture.bind();
-    specular.bind();
-
-    vao.bind();
-    glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, nullptr);
+    m_mesh.draw(m_shader, m_camera);
 }
 
 void Game::inputs() {
@@ -62,19 +42,19 @@ void Game::inputs() {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 
     // reload shaders
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        shader.reloadShader(VERTEX_PATH, FRAG_PATH);
+    /*if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        m_shader.reloadShader(VERTEX_PATH, FRAG_PATH);
 
-        Texture::texUnit(shader, "albedo", 0);
+        Texture::texUnit(m_shader, "albedo", 0);
 
-        const GLint modelLoc = glGetUniformLocation(shader.getID(), "model");
+        const GLint modelLoc = glGetUniformLocation(m_shader.getID(), "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(pyramidModel));
 
-        const GLint lightLoc = glGetUniformLocation(shader.getID(), "lightPos");
+        const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");
         if (lightLoc == -1) { exit(EXIT_FAILURE); }
         glUniform3fv(lightLoc, 1, glm::value_ptr(lightPos));
-    }
+    }*/
 
     // camera movement
-    camera.inputs(window);
+    m_camera.inputs(window);
 }

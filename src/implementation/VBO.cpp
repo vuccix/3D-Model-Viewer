@@ -2,10 +2,12 @@
 
 VBO::~VBO() { glDeleteBuffers(1, &id); }
 
-void VBO::init(const GLfloat *vertices, const GLsizeiptr size) {
+void VBO::init(const std::vector<Vertex>& vertices) {
+    const auto size = static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex));
+
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices.data(), GL_STATIC_DRAW);
 }
 
 void VBO::bind() const { glBindBuffer(GL_ARRAY_BUFFER, id); }

@@ -2,12 +2,12 @@
 
 out vec4 FragColor;
 
+in vec3 curPos;
+in vec3 Normal;
 in vec3 color;
 in vec2 texCoord;
-in vec3 Normal;
-in vec3 curPos;
 
-uniform sampler2D albedo;
+uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 
 uniform vec3 lightPos;
@@ -31,5 +31,5 @@ void main() {
         specular            = specAmount * specularLight;
     }
 
-    FragColor = texture(albedo, texCoord) * lightColor * (diffuse + ambient) + texture(specular0, texCoord).r * specular;
+    FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + texture(specular0, texCoord).r * specular;
 }

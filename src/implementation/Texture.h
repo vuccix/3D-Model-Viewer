@@ -5,7 +5,7 @@
 
 class Texture {
 public:
-    Texture(const char* path, GLuint slot);
+    Texture(const char* path, const char* texType, GLuint slot);
    ~Texture();
 
     static void texUnit(const Shader& shader, const char* uniformName, GLint unit);
@@ -13,8 +13,10 @@ public:
     void unbind() const;
 
     GLuint getID() const { return id; }
+    const char* getType() const { return type; }
 
 private:
-    GLuint id{};
-    GLuint unit{};
+    GLuint      id{};
+    const char* type;
+    GLuint      unit{};
 };
