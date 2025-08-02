@@ -4,18 +4,11 @@
 #include <utility>
 #include "../Debug.h"
 
-// todo: remove Mesh::init() and move to this ctor
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures) {
-    init(std::move(vertices), std::move(indices), std::move(textures));
-}
-
-void Mesh::init(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures) {
-    m_vertices = std::move(vertices);
-    m_indices  = std::move(indices);
-    m_textures = std::move(textures);
-
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<ATexture> textures)
+        : m_vertices(std::move(vertices)), m_indices(std::move(indices)), m_textures(std::move(textures)) {
     m_vao.bind();
 
+    // todo replace VBO::init and EBO::init with constructors
     m_vbo.init(m_vertices);
     m_ebo.init(m_indices);
 
@@ -29,7 +22,7 @@ void Mesh::init(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::
     m_ebo.unbind();
 }
 
-void Mesh::draw(const Shader& shader, const Camera& camera) const {
+void Mesh::draw(const Shader& shader) const {
     shader.use();
     m_vao.bind();
 
@@ -39,7 +32,7 @@ void Mesh::draw(const Shader& shader, const Camera& camera) const {
 
     for (size_t i = 0; i < m_textures.size(); ++i) {
         std::string num;
-        std::string type = m_textures[i].getType();
+        std::string type = m_textures[i]->getType();
 
         if (type == "diffuse")
             num = std::to_string(numDiff++);
@@ -48,14 +41,18 @@ void Mesh::draw(const Shader& shader, const Camera& camera) const {
         else if (type == "normal")
             num = std::to_string(numNorm++);
 
-        Texture::texUnit(shader, (type + num).c_str(), static_cast<GLint>(i));
-        m_textures[i].bind();
+        // Texture::texUnit(shader, (type + num).c_str(), static_cast<GLint>(i));
+        // m_textures[i]->bind();
+
+        glUniform1i(glGetUniformLocation(shader.getID(), (type + num).c_str()), static_cast<GLint>(i));
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, m_textures[i]->getID());
+
+        checkGLError("bind texture");
     }
 
-    const GLint loc = glGetUniformLocation(shader.getID(), "camPos");
-    glUniform3fv(loc, 1, glm::value_ptr(camera.getPosition()));
-
-    camera.sendMatrix(shader, "MVP");
-
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
+    m_vao.unbind();
+
+    glActiveTexture(GL_TEXTURE0);
 }

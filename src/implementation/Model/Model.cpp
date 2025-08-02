@@ -1,9 +1,31 @@
 #include "Model.h"
 #include "../Debug.h"
+#include <stb/stb_image.h>
 #include <iostream>
+#include <memory>
 
 #define CGLTF_IMPLEMENTATION
 #include <cgltf/cgltf.h>
+
+using ATexture = std::shared_ptr<Texture>;
+
+Image loadTexture(const cgltf_image* image) {
+    if (!image) throw std::runtime_error("image is null");
+
+    if (const cgltf_buffer_view* view = image->buffer_view; view) {
+        const uint8_t* imageData = static_cast<const uint8_t*>(view->buffer->data) + view->offset;
+        int w, h, channels;
+
+        const int viewSize = static_cast<int>(view->size);
+        unsigned char* decoded = stbi_load_from_memory(imageData, viewSize, &w, &h, &channels, 0);
+        if (!decoded)
+            throw std::runtime_error("Failed to decode embedded image");
+
+        return { decoded, w, h, channels };
+    }
+
+    throw std::runtime_error("Failed to load texture");
+}
 
 void Model::init(const char* path) {
     cgltf_options options = {};
@@ -15,7 +37,7 @@ void Model::init(const char* path) {
         throw std::runtime_error("Failed to load model from file " + std::string(path));
 
     // load binary buffers
-    result = cgltf_load_buffers(&options, data, "model.glb");
+    result = cgltf_load_buffers(&options, data, path);
     if (result != cgltf_result_success) {
         cgltf_free(data);
         throw std::runtime_error("Failed to load buffers");
@@ -31,9 +53,7 @@ void Model::init(const char* path) {
     // count meshes
     size_t meshCnt = 0;
     for (cgltf_size i = 0; i < data->meshes_count; ++i) {
-        const cgltf_mesh& gltf_mesh = data->meshes[i];
-
-        for (cgltf_size j = 0; j < gltf_mesh.primitives_count; ++j)
+        for (cgltf_size j = 0; j < data->meshes[i].primitives_count; ++j)
             ++meshCnt;
     }
 
@@ -67,18 +87,18 @@ void Model::init(const char* path) {
             for (size_t v = 0; v < vertexCount; ++v) {
                 Vertex vert = {};
 
-                float pos[3];
+                float pos[3]{};
                 cgltf_accessor_read_float(pos_accessor, v, pos, 3);
                 vert.position = glm::vec3(pos[0], pos[1], pos[2]);
 
                 if (norm_accessor) {
-                    float norm[3];
+                    float norm[3]{};
                     cgltf_accessor_read_float(norm_accessor, v, norm, 3);
                     vert.normal = glm::vec3(norm[0], norm[1], norm[2]);
                 }
 
                 if (tex_accessor) {
-                    float uv[2];
+                    float uv[2]{};
                     cgltf_accessor_read_float(tex_accessor, v, uv, 2);
                     vert.texCoords = glm::vec2(uv[0], uv[1]);
                 }
@@ -99,15 +119,43 @@ void Model::init(const char* path) {
                 }
             }
 
+            // match loaded textures with meshes
+            std::vector<ATexture> textures;
+            textures.reserve(3);
+
+            if (prim.material) {
+                if (const cgltf_material* mat = prim.material; mat->has_pbr_metallic_roughness) {
+                    // diffuse texture
+                    const cgltf_texture* diffuseTex = mat->pbr_metallic_roughness.base_color_texture.texture;
+                    if (diffuseTex && diffuseTex->image) {
+                        Image tex = loadTexture(diffuseTex->image);
+                        // textures.emplace_back(tex, "diffuse", 69);
+                        textures.emplace_back(std::make_shared<Texture>(tex, "diffuse", 69));
+                        stbi_image_free(tex.data);
+                    }
+
+                    // metallic-roughness map (specular for now)
+                    const cgltf_texture* mrTex = mat->pbr_metallic_roughness.metallic_roughness_texture.texture;
+                    if (mrTex && mrTex->image) {
+                        Image tex = loadTexture(mrTex->image);
+                        // textures.emplace_back(tex, "specular", 420);
+                        textures.emplace_back(std::make_shared<Texture>(tex, "specular", 69));
+                        stbi_image_free(tex.data);
+                    }
+                }
+            }
+
             // create mesh
-            m_meshes.emplace_back(vertices, indices, std::vector<Texture>());
+            m_meshes.emplace_back(vertices, indices, textures);
         }
     }
 
     cgltf_free(data);
 }
 
-void Model::draw(const Shader& shader, const Camera& camera) const {
-    for (const Mesh& mesh : m_meshes)
-        mesh.draw(shader, camera);
+void Model::draw(const Shader& shader) const {
+    for (const Mesh& mesh : m_meshes) {
+        mesh.draw(shader);
+        checkGLError("mesh.draw");
+    }
 }

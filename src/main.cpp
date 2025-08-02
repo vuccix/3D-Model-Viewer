@@ -62,8 +62,8 @@ int main() {
         deltaTime = currTime - prevTime;
         ++counter;
         if (deltaTime >= 1. / 30.) {
-            const std::string FPS      = std::format("{}", (1. / deltaTime) * counter);
-            const std::string newTitle = std::format("3D Model Viewer - {}FPS", FPS);
+            const std::string FPS      = std::format("{}", static_cast<unsigned>((1. / deltaTime) * counter));
+            const std::string newTitle = std::format("3D Model Viewer - {} FPS", FPS);
             glfwSetWindowTitle(window, newTitle.c_str());
             prevTime = currTime;
             counter  = 0;
