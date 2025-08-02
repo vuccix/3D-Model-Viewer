@@ -8,7 +8,7 @@ in vec3 color;
 in vec2 texCoord;
 
 uniform sampler2D diffuse0;
-uniform sampler2D specular0;
+uniform sampler2D specular0; // R: AO, G: Rougness (rn specular), B: Metallic
 uniform sampler2D normal0;
 
 uniform vec3 lightPos;
@@ -32,6 +32,6 @@ void main() {
         specular            = specAmount * specularLight;
     }
 
-    FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + texture(specular0, texCoord).r * specular;
-    //FragColor = vec4(color, 1.);
+    float specValue = specular * texture(specular0, texCoord).g; // <---- ** .g **
+    FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + specValue;
 }

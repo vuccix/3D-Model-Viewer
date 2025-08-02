@@ -2,12 +2,9 @@
 #include "../Debug.h"
 #include <stb/stb_image.h>
 #include <iostream>
-#include <memory>
 
 #define CGLTF_IMPLEMENTATION
 #include <cgltf/cgltf.h>
-
-using ATexture = std::shared_ptr<Texture>;
 
 Image loadTexture(const cgltf_image* image) {
     if (!image) throw std::runtime_error("image is null");
@@ -79,6 +76,7 @@ void Model::init(const char* path) {
                 if (strcmp(attr.name, "POSITION")   == 0) pos_accessor  = attr.data;
                 if (strcmp(attr.name, "NORMAL")     == 0) norm_accessor = attr.data;
                 if (strcmp(attr.name, "TEXCOORD_0") == 0) tex_accessor  = attr.data;
+                // todo add tangent
             }
 
             size_t vertexCount = pos_accessor ? pos_accessor->count : 0;
@@ -119,9 +117,9 @@ void Model::init(const char* path) {
                 }
             }
 
-            // match loaded textures with meshes
-            std::vector<ATexture> textures;
-            textures.reserve(3);
+            // parse textures
+            std::vector<Texture> textures;
+            textures.reserve(3); // Diffuse, Roughness-Metallic, Normal
 
             if (prim.material) {
                 if (const cgltf_material* mat = prim.material; mat->has_pbr_metallic_roughness) {
@@ -129,8 +127,7 @@ void Model::init(const char* path) {
                     const cgltf_texture* diffuseTex = mat->pbr_metallic_roughness.base_color_texture.texture;
                     if (diffuseTex && diffuseTex->image) {
                         Image tex = loadTexture(diffuseTex->image);
-                        // textures.emplace_back(tex, "diffuse", 69);
-                        textures.emplace_back(std::make_shared<Texture>(tex, "diffuse", 69));
+                        textures.emplace_back(tex, "diffuse", 69);
                         stbi_image_free(tex.data);
                     }
 
@@ -138,15 +135,16 @@ void Model::init(const char* path) {
                     const cgltf_texture* mrTex = mat->pbr_metallic_roughness.metallic_roughness_texture.texture;
                     if (mrTex && mrTex->image) {
                         Image tex = loadTexture(mrTex->image);
-                        // textures.emplace_back(tex, "specular", 420);
-                        textures.emplace_back(std::make_shared<Texture>(tex, "specular", 69));
+                        textures.emplace_back(tex, "specular", 420);
                         stbi_image_free(tex.data);
                     }
+
+                    // normal map
                 }
             }
 
             // create mesh
-            m_meshes.emplace_back(vertices, indices, textures);
+            m_meshes.emplace_back(vertices, indices, std::move(textures));
         }
     }
 

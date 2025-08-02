@@ -1,14 +1,12 @@
 #include "Mesh.h"
 #include <string>
 #include <iostream>
-#include <utility>
 #include "../Debug.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<ATexture> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture>&& textures)
         : m_vertices(std::move(vertices)), m_indices(std::move(indices)), m_textures(std::move(textures)) {
     m_vao.bind();
 
-    // todo replace VBO::init and EBO::init with constructors
     m_vbo.init(m_vertices);
     m_ebo.init(m_indices);
 
@@ -32,7 +30,7 @@ void Mesh::draw(const Shader& shader) const {
 
     for (size_t i = 0; i < m_textures.size(); ++i) {
         std::string num;
-        std::string type = m_textures[i]->getType();
+        std::string type = m_textures[i].getType();
 
         if (type == "diffuse")
             num = std::to_string(numDiff++);
@@ -46,7 +44,7 @@ void Mesh::draw(const Shader& shader) const {
 
         glUniform1i(glGetUniformLocation(shader.getID(), (type + num).c_str()), static_cast<GLint>(i));
         glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, m_textures[i]->getID());
+        glBindTexture(GL_TEXTURE_2D, m_textures[i].getID());
 
         checkGLError("bind texture");
     }

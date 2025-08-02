@@ -1,8 +1,7 @@
 #include "Texture.h"
 #include <iostream>
 
-Texture::Texture(const Image& img, const char *texType, const GLuint slot)
-        : type(texType), unit(slot) {
+Texture::Texture(const Image& img, const char* texType, const GLuint slot) : type(texType), unit(slot) {
     if (!img.data) {
         std::cerr << "Failed to load texture\n";
         return;
@@ -31,7 +30,26 @@ Texture::Texture(const Image& img, const char *texType, const GLuint slot)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::~Texture() { glDeleteTextures(1, &id); }
+Texture::~Texture() {
+    if (id != 0)
+        glDeleteTextures(1, &id);
+}
+
+Texture::Texture(Texture&& other) noexcept : id(other.id), type(other.type), unit(other.unit) {
+    other.id = 0;  // prevent deletion
+}
+
+Texture& Texture::operator=(Texture&& other) noexcept {
+    if (this != &other) {
+        glDeleteTextures(1, &id); // delete current
+
+        id       = other.id;
+        type     = other.type;
+        unit     = other.unit;
+        other.id = 0;
+    }
+    return *this;
+}
 
 void Texture::texUnit(const Shader& shader, const char* uniformName, const GLint unit) {
     shader.use();
