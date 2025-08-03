@@ -4,7 +4,6 @@ out vec4 FragColor;
 
 in vec3 curPos;
 in vec3 Normal;
-in vec3 color;
 in vec2 texCoord;
 in mat3 TBN;
 
@@ -19,16 +18,20 @@ vec4 lightColor = vec4(1., 1., 1., 1.);
 
 vec3 getNormal() {
     vec3 normal = texture(normal0, texCoord).rgb;
-    normal = normalize(normal * 2. - 1.); // transform from [0,1] to [-1,1]
+    normal      = normalize(normal * 2. - 1.); // transform from [0,1] to [-1,1]
     return normalize(TBN * normal);
+
+    // normalize(Normal);
 }
 
 void main() {
-    vec3 normal   = getNormal(); // normalize(Normal);
+    vec3 normal   = getNormal();
     vec3 lightDir = normalize(lightPos - curPos);
 
     float ambient = 0.2;
     float diffuse = max(dot(normal, lightDir), 0.);
+    float AO      = texture(specular0, texCoord).r;
+    diffuse      *= AO;
 
     float specular = 0.;
     if (diffuse != 0.) {
@@ -39,6 +42,6 @@ void main() {
         specular            = specAmount * specularLight;
     }
 
-    float specValue = specular * (1.0 - texture(specular0, texCoord).g); // <---- ** .g **
+    float specValue = specular * (1.0 - texture(specular0, texCoord).g);
     FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + specValue;
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/gl.h>
 #include "Shader.h"
 #include "Model/Model.h"
 #include "Camera.h"
@@ -11,6 +10,7 @@ public:
 
     void render();
     void inputs();
+    void onResize();
 
 private:
     Shader m_shader;

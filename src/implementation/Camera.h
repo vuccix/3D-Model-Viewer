@@ -11,8 +11,8 @@ class Camera {
 public:
     Camera(const glm::vec3& position);
 
-    void updateMatrix(float FOVdeg, float near, float far);
-    void sendMatrix(const Shader& shader, const char* uniform) const;
+    void updateMatrix(float FOV_deg, float near, float far);
+    void sendMatrix(const Shader& shader, const char* uniform);
 
     void inputs(GLFWwindow* window);
 
@@ -23,6 +23,7 @@ private:
     glm::vec3 m_target = { 0.f, 0.f, -1.f };
     glm::vec3 m_up     = { 0.f, 1.f,  0.f };
     glm::mat4 m_matrix = { 1.f };
+    glm::mat4 m_projection{};
 
     int   m_width{}, m_height{};
     float m_angleH, m_angleV;

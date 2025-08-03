@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <iostream>
 
 Camera::Camera(const glm::vec3& position) : m_position(position) {
     GLFWwindow* window = glfwGetCurrentContext();
@@ -25,16 +26,15 @@ Camera::Camera(const glm::vec3& position) : m_position(position) {
     m_angleV = -glm::degrees(glm::asin(m_target.y));
 }
 
-void Camera::updateMatrix(const float FOVdeg, const float near, const float far) {
+void Camera::updateMatrix(const float FOV_deg, const float near, const float far) {
+    GLFWwindow* window = glfwGetCurrentContext();
+    glfwGetWindowSize(window, &m_width, &m_height);
+
     const float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
-
-    const glm::mat4 view       = glm::lookAt(m_position, m_position + m_target, m_up);
-    const glm::mat4 projection = glm::perspective(glm::radians(FOVdeg), aspect, near, far);
-
-    m_matrix = projection * view;
+    m_projection = glm::perspective(glm::radians(FOV_deg), aspect, near, far);
 }
 
-void Camera::sendMatrix(const Shader& shader, const char* uniform) const {
+void Camera::sendMatrix(const Shader& shader, const char* uniform) {
     // send PV matrix
     const GLint loc = glGetUniformLocation(shader.getID(), uniform);
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m_matrix));
@@ -42,6 +42,9 @@ void Camera::sendMatrix(const Shader& shader, const char* uniform) const {
     // send camera position
     const GLint posLoc = glGetUniformLocation(shader.getID(), "camPos");
     glUniform3fv(posLoc, 1, glm::value_ptr(m_position));
+
+    const glm::mat4 view = glm::lookAt(m_position, m_position + m_target, m_up);
+    m_matrix = m_projection * view;
 }
 
 void Camera::inputs(GLFWwindow* window) {

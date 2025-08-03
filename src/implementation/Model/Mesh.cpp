@@ -11,10 +11,9 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
     m_ebo.init(m_indices);
 
     VAO::linkAttrib(m_vbo, 0, 3, GL_FLOAT, sizeof(Vertex), nullptr);                                     // position
-    VAO::linkAttrib(m_vbo, 1, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 3 * sizeof(float))); // normal
-    VAO::linkAttrib(m_vbo, 2, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 6 * sizeof(float))); // color
-    VAO::linkAttrib(m_vbo, 3, 2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 9 * sizeof(float))); // tex coords
-    VAO::linkAttrib(m_vbo, 4, 4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(11 * sizeof(float))); // tangent
+    VAO::linkAttrib(m_vbo, 1, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(3 * sizeof(float))); // normal
+    VAO::linkAttrib(m_vbo, 2, 2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(6 * sizeof(float))); // tex coords
+    VAO::linkAttrib(m_vbo, 3, 4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(8 * sizeof(float))); // tangent
 
     m_vao.unbind();
     m_vbo.unbind();

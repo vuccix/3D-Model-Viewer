@@ -11,6 +11,13 @@ void glfwErrorCallback(const int error, const char* description) {
     std::cerr << "GLFW Error [" << error << "]: " << description << '\n';
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+
+    const auto game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    if (game) game->onResize();
+}
+
 int main() {
     // init GLFW
     glfwSetErrorCallback(glfwErrorCallback);
@@ -40,7 +47,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glEnable(GL_DEPTH_TEST);
 

@@ -109,8 +109,6 @@ void Model::init(const char* path) {
                     vert.tangent = glm::vec4(tang[0], tang[1], tang[2], tang[3]);
                 }
 
-                vert.color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
-
                 vertices[v] = vert;
             }
 

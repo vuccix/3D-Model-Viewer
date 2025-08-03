@@ -1,12 +1,11 @@
 #include "Game.h"
-
-#include <iostream>
-#include <bits/ostream.tcc>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
+#include <iostream>
 
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
-#define MODEL_PATH  "../src/resources/models/stanford_dragon_pbr.glb" // "../src/resources/monk.glb"
+#define MODEL_PATH  "../src/resources/stanford_dragon_pbr.glb" // "../src/resources/monk.glb"
 
 Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2.f)) {
     m_shader.use();
@@ -17,16 +16,17 @@ Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(0.01f)));
 
     constexpr glm::vec3 lightPos(0.75f);
+    // constexpr glm::vec3 lightPos(-0.75f, 0.75f, -0.75f);
     const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");
     glUniform3fv(lightLoc, 1, glm::value_ptr(lightPos));
+
+    glfwSetWindowUserPointer(glfwGetCurrentContext(), this);
+    m_camera.updateMatrix(45.f, 0.1f, 100.f);
 }
 
 void Game::render() {
     m_shader.use();
-
-    m_camera.updateMatrix(45.f, 0.1f, 100.f);
     m_camera.sendMatrix(m_shader, "MVP");
-
     m_model.draw(m_shader);
 }
 
@@ -39,4 +39,8 @@ void Game::inputs() {
 
     // camera movement
     m_camera.inputs(window);
+}
+
+void Game::onResize() {
+    m_camera.updateMatrix(45.f, 0.1f, 100.f);
 }
