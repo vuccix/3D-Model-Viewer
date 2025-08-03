@@ -70,15 +70,17 @@ void Model::init(const char* path) {
             cgltf_accessor* pos_accessor  = nullptr;
             cgltf_accessor* norm_accessor = nullptr;
             cgltf_accessor* tex_accessor  = nullptr;
+            cgltf_accessor* tang_accessor = nullptr;
 
             for (cgltf_size k = 0; k < prim.attributes_count; ++k) {
                 const cgltf_attribute& attr = prim.attributes[k];
                 if (strcmp(attr.name, "POSITION")   == 0) pos_accessor  = attr.data;
                 if (strcmp(attr.name, "NORMAL")     == 0) norm_accessor = attr.data;
                 if (strcmp(attr.name, "TEXCOORD_0") == 0) tex_accessor  = attr.data;
-                // todo add tangent
+                if (strcmp(attr.name, "TANGENT")    == 0) tang_accessor = attr.data;
             }
 
+            // parse vertices
             size_t vertexCount = pos_accessor ? pos_accessor->count : 0;
             vertices.resize(vertexCount);
 
@@ -99,6 +101,12 @@ void Model::init(const char* path) {
                     float uv[2]{};
                     cgltf_accessor_read_float(tex_accessor, v, uv, 2);
                     vert.texCoords = glm::vec2(uv[0], uv[1]);
+                }
+
+                if (tang_accessor) {
+                    float tang[4]{};
+                    cgltf_accessor_read_float(tang_accessor, v, tang, 4);
+                    vert.tangent = glm::vec4(tang[0], tang[1], tang[2], tang[3]);
                 }
 
                 vert.color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
@@ -127,7 +135,7 @@ void Model::init(const char* path) {
                     const cgltf_texture* diffuseTex = mat->pbr_metallic_roughness.base_color_texture.texture;
                     if (diffuseTex && diffuseTex->image) {
                         Image tex = loadTexture(diffuseTex->image);
-                        textures.emplace_back(tex, "diffuse", 69);
+                        textures.emplace_back(tex, "diffuse", textures.size());
                         stbi_image_free(tex.data);
                     }
 
@@ -135,11 +143,17 @@ void Model::init(const char* path) {
                     const cgltf_texture* mrTex = mat->pbr_metallic_roughness.metallic_roughness_texture.texture;
                     if (mrTex && mrTex->image) {
                         Image tex = loadTexture(mrTex->image);
-                        textures.emplace_back(tex, "specular", 420);
+                        textures.emplace_back(tex, "specular", textures.size());
                         stbi_image_free(tex.data);
                     }
 
                     // normal map
+                    const cgltf_texture* normalTex = mat->normal_texture.texture;
+                    if (normalTex && normalTex->image) {
+                        Image tex = loadTexture(normalTex->image);
+                        textures.emplace_back(tex, "normal", textures.size());
+                        stbi_image_free(tex.data);
+                    }
                 }
             }
 

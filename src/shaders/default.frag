@@ -6,6 +6,7 @@ in vec3 curPos;
 in vec3 Normal;
 in vec3 color;
 in vec2 texCoord;
+in mat3 TBN;
 
 uniform sampler2D diffuse0;
 uniform sampler2D specular0; // R: AO, G: Rougness (rn specular), B: Metallic
@@ -16,8 +17,14 @@ uniform vec3 camPos;
 
 vec4 lightColor = vec4(1., 1., 1., 1.);
 
+vec3 getNormal() {
+    vec3 normal = texture(normal0, texCoord).rgb;
+    normal = normalize(normal * 2. - 1.); // transform from [0,1] to [-1,1]
+    return normalize(TBN * normal);
+}
+
 void main() {
-    vec3 normal   = normalize(Normal);
+    vec3 normal   = getNormal(); // normalize(Normal);
     vec3 lightDir = normalize(lightPos - curPos);
 
     float ambient = 0.2;
@@ -32,6 +39,6 @@ void main() {
         specular            = specAmount * specularLight;
     }
 
-    float specValue = specular * texture(specular0, texCoord).g; // <---- ** .g **
+    float specValue = specular * (1.0 - texture(specular0, texCoord).g); // <---- ** .g **
     FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + specValue;
 }

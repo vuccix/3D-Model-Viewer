@@ -6,7 +6,7 @@
 
 #define VERTEX_PATH "../src/shaders/default.vert"
 #define FRAG_PATH   "../src/shaders/default.frag"
-#define MODEL_PATH  "../src/resources/monk.glb"
+#define MODEL_PATH  "../src/resources/models/stanford_dragon_pbr.glb" // "../src/resources/monk.glb"
 
 Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2.f)) {
     m_shader.use();
@@ -14,7 +14,7 @@ Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2
     m_model.init(MODEL_PATH);
 
     const GLint modelLoc = glGetUniformLocation(m_shader.getID(), "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(0.5f)));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(0.01f)));
 
     constexpr glm::vec3 lightPos(0.75f);
     const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");

@@ -10,10 +10,11 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
     m_vbo.init(m_vertices);
     m_ebo.init(m_indices);
 
-    VAO::linkAttrib(m_vbo, 0, 3, GL_FLOAT, sizeof(Vertex), nullptr);                                    // position
-    VAO::linkAttrib(m_vbo, 1, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(3 * sizeof(float))); // normal
-    VAO::linkAttrib(m_vbo, 2, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(6 * sizeof(float))); // color
-    VAO::linkAttrib(m_vbo, 3, 2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(9 * sizeof(float))); // tex coords
+    VAO::linkAttrib(m_vbo, 0, 3, GL_FLOAT, sizeof(Vertex), nullptr);                                     // position
+    VAO::linkAttrib(m_vbo, 1, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 3 * sizeof(float))); // normal
+    VAO::linkAttrib(m_vbo, 2, 3, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 6 * sizeof(float))); // color
+    VAO::linkAttrib(m_vbo, 3, 2, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>( 9 * sizeof(float))); // tex coords
+    VAO::linkAttrib(m_vbo, 4, 4, GL_FLOAT, sizeof(Vertex), reinterpret_cast<void*>(11 * sizeof(float))); // tangent
 
     m_vao.unbind();
     m_vbo.unbind();
@@ -39,12 +40,12 @@ void Mesh::draw(const Shader& shader) const {
         else if (type == "normal")
             num = std::to_string(numNorm++);
 
-        // Texture::texUnit(shader, (type + num).c_str(), static_cast<GLint>(i));
-        // m_textures[i]->bind();
+        Texture::texUnit(shader, (type + num).c_str(), static_cast<GLint>(i));
+        m_textures[i].bind();
 
-        glUniform1i(glGetUniformLocation(shader.getID(), (type + num).c_str()), static_cast<GLint>(i));
-        glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, m_textures[i].getID());
+        // glUniform1i(glGetUniformLocation(shader.getID(), (type + num).c_str()), static_cast<GLint>(i));
+        // glActiveTexture(GL_TEXTURE0 + i);
+        // glBindTexture(GL_TEXTURE_2D, m_textures[i].getID());
 
         checkGLError("bind texture");
     }

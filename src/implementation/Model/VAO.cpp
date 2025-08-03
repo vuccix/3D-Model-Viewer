@@ -6,7 +6,7 @@ VAO::~VAO() { glDeleteVertexArrays(1, &id); }
 
 void VAO::linkAttrib(const VBO& vbo, GLuint layout, GLint numComponents, GLenum type, GLsizeiptr stride, const void* offset) {
     vbo.bind();
-    glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
+    glVertexAttribPointer(layout, numComponents, type, GL_FALSE, static_cast<int>(stride), offset);
     glEnableVertexAttribArray(layout);
     vbo.unbind();
 }

@@ -52,7 +52,6 @@ Texture& Texture::operator=(Texture&& other) noexcept {
 }
 
 void Texture::texUnit(const Shader& shader, const char* uniformName, const GLint unit) {
-    shader.use();
     glUniform1i(glGetUniformLocation(shader.getID(), uniformName), unit);
 }
 

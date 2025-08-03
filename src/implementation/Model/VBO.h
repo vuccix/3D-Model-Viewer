@@ -9,6 +9,7 @@ struct Vertex {
     glm::vec3 normal;
     glm::vec3 color;
     glm::vec2 texCoords;
+    glm::vec4 tangent;
 };
 
 class VBO {
