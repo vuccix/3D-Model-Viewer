@@ -1,6 +1,28 @@
 # 3D Model Viewer
 
-todo
+A real-time GLTF model viewer built with modern C++ and OpenGL.
+This project focuses on loading and displaying 3D models with physically plausible shading and interactive camera controls, ideal for inspecting GLTF assets.
+
+## Features
+
+- **GLTF 2.0 model loading**
+- **Full texture support**
+  - Diffuse (albedo) map
+  - Specular map (Phong reflectance model)
+  - Normal mapping
+  - Ambient Occlusion (AO) textures
+- **Basic Phong shading for realistic lighting**
+- **Free-fly camera controls:**
+  - <kbd>WASD</kbd> movement
+  - Mouse look (when holding the right mouse button)
+
+## TODO
+
+- Add a simple GUI
+- Replace Phong with PBR shader (metallic-roughness workflow)
+- Delta time-based movement (fix movement speed across framerates)
+- Add a material system (organized data structure for shaders/textures/uniforms)
+- ...
 
 ## Dependencies
 
