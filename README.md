@@ -1,7 +1,13 @@
 # 3D Model Viewer
 
+[![Language: C++](https://img.shields.io/badge/language-C%2B%2B20-blue.svg)](https://en.cppreference.com/w/cpp/20.html)
+[![OpenGL](https://img.shields.io/badge/OpenGL-3.3-orange.svg)](https://www.opengl.org/)
+[![GLTF Support](https://img.shields.io/badge/Format-GLTF%202.0-green.svg)](https://www.khronos.org/gltf/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)]()
+[![CMake](https://img.shields.io/badge/build-CMake%203.20+-blue.svg)](https://cmake.org/)
+
 A real-time GLTF model viewer built with modern C++ and OpenGL.
-This project focuses on loading and displaying 3D models with physically plausible shading and interactive camera controls, ideal for inspecting GLTF assets.
+This project focuses on loading and displaying 3D models with physically plausible shading and interactive camera controls.
 
 ## Features
 
@@ -18,7 +24,7 @@ This project focuses on loading and displaying 3D models with physically plausib
 
 ## TODO
 
-- Add a simple GUI
+- Add a simple GUI (using ImGUI)
 - Replace Phong with PBR shader (metallic-roughness workflow)
 - Delta time-based movement (fix movement speed across framerates)
 - Add a material system (organized data structure for shaders/textures/uniforms)
