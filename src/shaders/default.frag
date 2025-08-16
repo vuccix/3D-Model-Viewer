@@ -14,7 +14,7 @@ uniform sampler2D normal0;
 uniform vec3 lightPos;
 uniform vec3 camPos;
 
-vec4 lightColor = vec4(1., 1., 1., 1.);
+const vec4 lightColor = vec4(1.);
 
 vec3 getNormal() {
     vec3 normal = texture(normal0, texCoord).rgb;
@@ -38,10 +38,10 @@ void main() {
         float specularLight = 0.5;
         vec3  viewDir       = normalize(camPos - curPos);
         vec3  halfwayVec    = normalize(viewDir + lightDir);
-        float specAmount    = pow(max(dot(normal, halfwayVec), 0.), 16);
+        float specAmount    = pow(max(dot(normal, halfwayVec), 0.), 16.);
         specular            = specAmount * specularLight;
     }
 
-    float specValue = specular * (1.0 - texture(specular0, texCoord).g);
+    float specValue = specular * (1. - texture(specular0, texCoord).g);
     FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient) + specValue;
 }

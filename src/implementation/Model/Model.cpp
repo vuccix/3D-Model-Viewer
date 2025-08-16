@@ -14,7 +14,7 @@ Image loadTexture(const cgltf_image* image) {
         int w, h, channels;
 
         const int viewSize = static_cast<int>(view->size);
-        unsigned char* decoded = stbi_load_from_memory(imageData, viewSize, &w, &h, &channels, 0);
+        uint8_t* decoded = stbi_load_from_memory(imageData, viewSize, &w, &h, &channels, 0);
         if (!decoded)
             throw std::runtime_error("Failed to decode embedded image");
 
@@ -49,10 +49,8 @@ void Model::init(const char* path) {
 
     // count meshes
     size_t meshCnt = 0;
-    for (cgltf_size i = 0; i < data->meshes_count; ++i) {
-        for (cgltf_size j = 0; j < data->meshes[i].primitives_count; ++j)
-            ++meshCnt;
-    }
+    for (cgltf_size i = 0; i < data->meshes_count; ++i)
+        meshCnt += data->meshes[i].primitives_count;
 
     m_meshes.reserve(meshCnt);
 
@@ -164,6 +162,8 @@ void Model::init(const char* path) {
 }
 
 void Model::draw(const Shader& shader) const {
+    shader.use();
+
     for (const Mesh& mesh : m_meshes) {
         mesh.draw(shader);
         checkGLError("mesh.draw");

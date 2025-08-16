@@ -4,7 +4,7 @@
 #include "../Shader.h"
 
 struct Image {
-    unsigned char* data;
+    uint8_t* data;
     int width, height, nrChannels;
 };
 
