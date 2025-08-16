@@ -12,13 +12,9 @@ Game::Game() : m_shader(VERTEX_PATH, FRAG_PATH), m_camera(glm::vec3(0.f, 0.5f, 2
 
     m_model.init(MODEL_PATH);
 
-    const GLint modelLoc = glGetUniformLocation(m_shader.getID(), "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(0.01f)));
-
-    constexpr glm::vec3 lightPos(0.75f);
-    // constexpr glm::vec3 lightPos(-0.75f, 0.75f, -0.75f);
-    const GLint lightLoc = glGetUniformLocation(m_shader.getID(), "lightPos");
-    glUniform3fv(lightLoc, 1, glm::value_ptr(lightPos));
+    constexpr glm::vec3 lightPos(0.75f); // (-0.75f, 0.75f, -0.75f);
+    m_shader.setUniform("model", glm::mat4(0.01f));
+    m_shader.setUniform("lightPos", lightPos);
 
     glfwSetWindowUserPointer(glfwGetCurrentContext(), this);
     m_camera.updateMatrix(45.f, 0.1f, 100.f);

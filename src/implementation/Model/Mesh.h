@@ -7,6 +7,7 @@
 #include "EBO.h"
 #include "../Shader.h"
 #include "Texture.h"
+#include "Material.h"
 
 class Mesh {
 public:
@@ -15,9 +16,11 @@ public:
     void draw(const Shader& shader) const;
 
 private:
-    std::vector<Vertex>  m_vertices;
-    std::vector<GLuint>  m_indices;
-    std::vector<Texture> m_textures;
+    std::vector<Vertex> m_vertices;
+    std::vector<GLuint> m_indices;
+    Material            m_material;
+
+    size_t              m_material_ID{};
 
     VAO m_vao;
     VBO m_vbo;
